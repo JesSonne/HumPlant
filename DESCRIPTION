@@ -10,8 +10,8 @@ Authors@R: c(
     )
   )
 Imports:
-	bipartite
-	scales
+	bipartite,
+	scales,
 	mipfp	
 
 Description: More about what it does (maybe more than one line).
