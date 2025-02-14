@@ -1,6 +1,6 @@
-#' @import scales
-#' @import bipartite
-#' @import mipfp
+library(scales)
+library(bipartite)
+library(mipfp)
 
 
 zscore <- function(x){(x-mean(x))/sd(x)}
