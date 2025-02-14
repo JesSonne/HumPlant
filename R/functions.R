@@ -1,3 +1,7 @@
+#' @import scales
+#' @import bipartite
+#' @import mipfp
+
 
 zscore <- function(x){(x-mean(x))/sd(x)}
 range01 <- function(x){(x-min(x))/(max(x)-min(x))}
