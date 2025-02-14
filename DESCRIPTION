@@ -8,13 +8,15 @@ Authors@R: c(
       email = "jane@example.com",
       role = c("aut", "cre")
     )
-  )
-Depends: bipartite, scales, mipfp	 
+  ) 
 Description: More about what it does (maybe more than one line).
     Continuation lines should be indented.
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
 Depends: 
-    R (>= 3.5)
+    	R (>= 3.5),
+	bipartite,
+	scales, 
+	mipfp	
 RoxygenNote: 7.3.2
