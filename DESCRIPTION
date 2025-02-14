@@ -9,10 +9,7 @@ Authors@R: c(
       role = c("aut", "cre")
     )
   )
-Depends:
-	bipartite,
-	scales,
-	mipfp	 
+Imports: bipartite, scales, mipfp	 
 Description: More about what it does (maybe more than one line).
     Continuation lines should be indented.
 License: What license is it under?
