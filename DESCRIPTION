@@ -9,7 +9,7 @@ Authors@R: c(
       role = c("aut", "cre")
     )
   )
-Imports:
+Depends:
 	bipartite,
 	scales,
 	mipfp	 
