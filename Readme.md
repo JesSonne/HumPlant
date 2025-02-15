@@ -4,6 +4,7 @@ HumPlant_Example code
 
 - [Visualising community structure aming interacting hummingbirds and
   plants](#visualising-community-structure-aming-interacting-hummingbirds-and-plants)
+  - [Installing the package](#installing-the-package)
   - [Taking a look at the data](#taking-a-look-at-the-data)
   - [Defining models for how morphologies influence the species’
     interactions](#defining-models-for-how-morphologies-influence-the-species-interactions)
@@ -20,6 +21,8 @@ HumPlant_Example code
 The following script will guide you through examples of how to model
 mechanisms, such as morphological matching, and visualise their effects
 on species interactions.
+
+### Installing the package
 
 The functions you will use are from the ‘HumPlant’ R package, which is
 hosted on this GitHub page. To install it, we use another package called

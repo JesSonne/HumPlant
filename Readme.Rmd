@@ -12,10 +12,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Visualising community structure aming interacting hummingbirds and plants
 
-
-
 The following script will guide you through examples of how to model mechanisms, such as morphological matching, and visualise their effects on species interactions.  
 
+
+### Installing the package
 The functions you will use are from the ‘HumPlant’ R package, which is hosted on this GitHub page. To install it, we use another package called ‘devtools’, which we first have to install and load in your R session. Remove the hashtag to enable the installation.
 
 ```{r,echo = T, message=FALSE }
