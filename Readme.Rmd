@@ -1,6 +1,8 @@
 ---
 title: "HumPlant_Example code"
-output: html_document
+output:
+  github_document:
+    toc: true
 date: "2025-02-14"
 ---
 
