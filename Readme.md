@@ -40,7 +40,7 @@ package after each update using the code provided below. Remove the
 hashtag to enable the installation.
 
 ``` r
-#devtools::install_github("JeSonne/Hummingbird-plant_project")
+#devtools::install_github("JeSonne/HumPlant")
 ```
 
 Now load the package in your current R session.

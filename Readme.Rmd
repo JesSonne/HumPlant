@@ -25,7 +25,7 @@ require(devtools)
 
 Throughout the course, I will refine the content in accordance with your feedback and suggestions. Therefore, you will need to reinstall the package after each update using the code provided below. Remove the hashtag to enable the installation.
 ```{r,echo = T, message=FALSE }
-#devtools::install_github("JeSonne/Hummingbird-plant_project")
+#devtools::install_github("JeSonne/HumPlant")
 ```
 
 Now load the package in your current R session.
