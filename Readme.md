@@ -8,12 +8,11 @@ HumPlant_Example code
   - [Taking a look at the data](#taking-a-look-at-the-data)
   - [Defining models for how morphologies influence the species’
     interactions](#defining-models-for-how-morphologies-influence-the-species-interactions)
-  - [Simulate an interaction network based on the two models
-    morphological
-    matching](#simulate-an-interaction-network-based-on-the-two-models-morphological-matching)
-  - [Simulate an interaction network based on the species
+  - [Simulate an interaction network based on the two morphological
+    models](#simulate-an-interaction-network-based-on-the-two-morphological-models)
+  - [Simulate an interaction network based on the species’
     abundances.](#simulate-an-interaction-network-based-on-the-species-abundances)
-  - [combining models based on abundances and
+  - [Combining models based on abundances and
     morphologies](#combining-models-based-on-abundances-and-morphologies)
 
 ## Visualising community structure aming interacting hummingbirds and plants
@@ -24,9 +23,9 @@ on species interactions.
 
 ### Installing the package
 
-The functions you will use are from the ‘HumPlant’ R package, which is
-hosted on this GitHub page. To install it, we use another package called
-‘devtools’, which we first have to install and load in your R session.
+You will use the functions from the ‘HumPlant’ R package, which is
+hosted on this GitHub page. We use another package called ‘devtools’ to
+install it, which we first have to install and load in your R session.
 Remove the hashtag to enable the installation.
 
 ``` r
@@ -34,10 +33,9 @@ Remove the hashtag to enable the installation.
 require(devtools)
 ```
 
-Throughout the course, I will refine the content in accordance with your
-feedback and suggestions. Therefore, you will need to reinstall the
-package after each update using the code provided below. Remove the
-hashtag to enable the installation.
+I will refine the content throughout the course with your feedback and
+suggestions. Therefore, you must reinstall the package using the code
+below after each update. Remove the hashtag to enable the installation.
 
 ``` r
 #devtools::install_github("JeSonne/HumPlant")
@@ -53,10 +51,10 @@ library(HumPlant)
 
 The object ‘Cajanuma’ contains the data I collected at the
 high-elevation site in Southern Ecuador. It contains the interaction
-network along with the ecological attributes, we will use for the
+network along with the ecological attributes we will use for the
 modelling.
 
-Below we define a series of objects with the data we are going to use.
+Below, we define a series of objects with the data we are going to use.
 Notice that the birds and plants are sorted according to the length of
 their bill/flower
 
@@ -79,8 +77,8 @@ n_plants=nrow(net)
 ```
 
 Use the ‘plotweb’ function to visualise the network. Notice that the
-species are sorted according to the length of their bills flowers from
-the sortest bills/flowers on the left to the longest on the right.
+species are sorted according to the length of their bill/flowers from
+the shortest bills/flowers on the left to the longest on the right.
 
 ``` r
 plotweb(net,method="normal",empty = F)
@@ -88,7 +86,7 @@ plotweb(net,method="normal",empty = F)
 
 ![](Readme_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
-The folling code convert or ‘splash’ the vectors on the ecological
+The following code converts or ‘splashes’ the vectors on the ecological
 attributes into a matrix format. This is just to make them easier to
 work with.
 
@@ -105,25 +103,25 @@ plant_abund_mat=splash_network(var=plant_abund,by_col = T)
 
 ### Defining models for how morphologies influence the species’ interactions
 
-The code below defines two initial models for how morphologies of
+The code below defines two initial models for how the morphologies of
 species might influence the species’ interactions. These are just two
 examples to get you started. In the project, you should come up with
 additional models that perhaps better capture the structure of the
-community. I will help you writing the code as long as you can
-speifically formulate your hypotheses.
+community. I will help you write the code as long as you can
+specifically formulate your hypotheses.
 
 The first is based on the ‘forbidden links’ concept in which species are
-prevented from visiting certain parters in the community. In this case,
-hummingbirds are prevented from vising flowers that are longer than
+prevented from visiting certain partners in the community. In this case,
+hummingbirds are prevented from visiting flowers that are longer than
 their bill + tounge length. The tounge length is defined as a fraction
 of the total bill length.
 
-The second model is derived from optimal foraging theory where
-hummingbirds should prefer visiting flwoers that are morphologically
+The second model is derived from optimal foraging theory, where
+hummingbirds should prefer visiting flowers that are morphologically
 similar to their bills. Here, we simply subtract the two measurements
-from eachother and take the absolute value. 0 will reflect perfect match
-and high values reflect greater mismatch. For convenience, we take
-inverse, such that higher values represent greater morphological
+from each other and take the absolute value. 0 will reflect a perfect
+match, and higher values reflect increasing mismatch. For convenience,
+we take inverse, such that higher values represent greater morphological
 matching.
 
 ``` r
@@ -142,18 +140,19 @@ absdif=function(h=hum_morph_mat,p=plant_morph_mat,tounge=1.8){
 }
 ```
 
-### Simulate an interaction network based on the two models morphological matching
+### Simulate an interaction network based on the two morphological models
 
 Start by stating the number of interactions you simulated per
-hummingbird species. As a start, lets assume the ave the same total
-number of interactions.
+hummingbird species. To start with, let’s assume they have the same
+total number of interactions.
 
 ``` r
 n_hum_int=rep(100,n_hums) 
 ```
 
-Now generate matrices of morphological matching. Notice that I have used
-different tounge length in each model. Why do you think that is?
+Now, generate matrices of morphological matching. Notice that the two
+models use different tongue lengths. Why do you think that is, and does
+it make sense?
 
 ``` r
 matching_matrix=absdif(tounge=1)
@@ -168,13 +167,13 @@ files, where some can be left empty (denoted ‘NULL’).
 The simulation itself is a two-stage process.
 
 - First, we simulate whether a pair of species have any or no
-  interactions, which is the binary part of the simulation. In this
-  example, we use the model of the morphological barrier.
+  Interactions. As such, this is the binary part of the simulation. In
+  this example, we use the model of the morphological barrier.
 
 - Secondly, we simulate how often a pair of species interact, should
-  they have any interactions with each other, which is the quantitative
-  part of the simulation. In this example, we use the model of the
-  morphological matching
+  they have any interactions with each other. As such, this is the
+  quantitative part of the simulation. In this example, we use the model
+  of the morphological matching.
 
 When the simulation concludes, it generates two indices of network
 structure. One index measures the degree of network nestedness, while
@@ -207,7 +206,7 @@ sim_net_morph=simulate_ZI_matrix(
     ##                   Nestedness Complementary specialization 
     ##                   20.0164723                    0.3151545
 
-Now lets take a look at the simulated network. Does the structure
+Now, let’s take a look at the simulated network. Does the structure
 coincide with your expectations and what could be improved?
 
 ``` r
@@ -216,15 +215,16 @@ plotweb(sim_net_morph,method="normal",empty = F)
 
 ![](Readme_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
-### Simulate an interaction network based on the species abundances.
+### Simulate an interaction network based on the species’ abundances.
 
-Common species are more easily encountered than rare species. The
-probability of If species interact randomly, the probability of two
-species interacting equalt the joint probability encountering them.
-Therefore, a theoretically intuitive null model would assume the number
-of interactions between two species are proportional to the product of
-their abundances. We will use for the quantitative part of the next
-simulation.
+Common species are more easily encountered than rare species. If species
+interact by random encounters, the interaction probability between two
+species (i and j) equals their joint ecounter probability = P(i) x P
+(j). We expect the encounter probabilities of species to be strongly
+correlated with their abundances. Therefore, an intuitive null model
+would assume the number of interactions between two species are
+proportional to the product of their abundances. We will use it for the
+quantitative part of the next simulation.
 
 ``` r
 abundance_model=function(h=hum_abund_mat,p=plant_abund_mat){
@@ -233,19 +233,20 @@ abundance_model=function(h=hum_abund_mat,p=plant_abund_mat){
 }
 ```
 
-Theoretcally, there is nothing preveting two species from having any
-interactions. Therefore, for the binary part of the simulating, we use a
-matrix stating that all interactions are equally likely.
+Under the assumption of random interactions, there are no processes
+preventing two species from having any interactions. Therefore, for the
+binary part of the simulation, we use a matrix stating that all
+interactions are equally likely.
 
 ``` r
 unit=net;unit[]=1
 ```
 
-Now we are ready to simulate a network without the influence of species
-morphologies where species interact as they randomly encounter
-eachother.
+Now, we are ready to simulate a network without the influence of species
+morphologies where species interact as they randomly encounter each
+other.
 
-NB. In the code, we now nake no specific assumptions about how many
+NB. In the code, we now make no specific assumptions about how many
 interactions the plants and hummingbirds have. We only state the total
 number of interactions we want simulated ‘n’.
 
@@ -267,9 +268,9 @@ sim_net_abund=simulate_ZI_matrix(
     ##                   Nestedness Complementary specialization 
     ##                     56.39239                      0.00000
 
-let’s plot it! Do you recognize this structure? For clarity, we order
-the species in the network according to their abundances. rarest left
-and the most common species at the right.
+Let’s plot it! Do you recognize this structure? For clarity, we orde the
+species in the network according to their abundance. The rarest left,
+and the most common species is on the right.
 
 ``` r
 sim_net_abund=sim_net_abund[order(plant_abund),]
@@ -280,13 +281,13 @@ plotweb(sim_net_abund,method="normal",empty = F)
 
 ![](Readme_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
-### combining models based on abundances and morphologies
+### Combining models based on abundances and morphologies
 
 We can combine the models based on morphologies and abundances and
 visualize how they combined influence the structure of the network.
 
 We just need to tell the function how to aggregate the weight matrices.
-For most applications, it makes most sense to use the product
+For most applications, it makes the most sense to use the product
 
 ``` r
 sim_net_morph_abund=simulate_ZI_matrix(
