@@ -68,18 +68,18 @@ plotweb(net,method="normal",empty = F)
 ```
 
 
-The following code converts or ‘splashes’ the vectors on the ecological attributes into a matrix format. This is just to make them easier to work with.
+The following code converts or ‘tile’ the vectors on the ecological attributes into a matrix format. This is just to make them easier to work with.
 
 
 ```{r,echo = T, message=T }
-hum_morph_mat=splash_network(net,hum_morph)
-plant_morph_mat=splash_network(net,plant_morph,by_col = T)
+hum_morph_mat=tile_vector(net,hum_morph)
+plant_morph_mat=tile_vector(net,plant_morph,by_col = T)
 
-hum_abund_mat=splash_network(net,hum_abund)
-plant_abund_mat=splash_network(net,plant_abund,by_col = T)
+hum_abund_mat=tile_vector(net,hum_abund)
+plant_abund_mat=tile_vector(net,plant_abund,by_col = T)
 
-hum_abund_mat=splash_network(var=hum_abund)
-plant_abund_mat=splash_network(var=plant_abund,by_col = T)
+hum_abund_mat=tile_vector(var=hum_abund)
+plant_abund_mat=tile_vector(var=plant_abund,by_col = T)
 
 ```
 
