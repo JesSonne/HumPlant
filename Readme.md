@@ -86,19 +86,19 @@ plotweb(net,method="normal",empty = F)
 
 ![](Readme_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
-The following code converts or ‘splashes’ the vectors on the ecological
+The following code converts or ‘tile’ the vectors on the ecological
 attributes into a matrix format. This is just to make them easier to
 work with.
 
 ``` r
-hum_morph_mat=splash_network(net,hum_morph)
-plant_morph_mat=splash_network(net,plant_morph,by_col = T)
+hum_morph_mat=tile_vector(net,hum_morph)
+plant_morph_mat=tile_vector(net,plant_morph,by_col = T)
 
-hum_abund_mat=splash_network(net,hum_abund)
-plant_abund_mat=splash_network(net,plant_abund,by_col = T)
+hum_abund_mat=tile_vector(net,hum_abund)
+plant_abund_mat=tile_vector(net,plant_abund,by_col = T)
 
-hum_abund_mat=splash_network(var=hum_abund)
-plant_abund_mat=splash_network(var=plant_abund,by_col = T)
+hum_abund_mat=tile_vector(var=hum_abund)
+plant_abund_mat=tile_vector(var=plant_abund,by_col = T)
 ```
 
 ### Defining models for how morphologies influence the species’ interactions
@@ -204,7 +204,7 @@ sim_net_morph=simulate_ZI_matrix(
 ```
 
     ##                   Nestedness Complementary specialization 
-    ##                   20.0164723                    0.3151545
+    ##                   20.0164723                    0.3150969
 
 Now, let’s take a look at the simulated network. Does the structure
 coincide with your expectations and what could be improved?
