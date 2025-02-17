@@ -1,4 +1,4 @@
-HumPlant_Example code
+HumPlant R package
 ================
 2025-02-14
 

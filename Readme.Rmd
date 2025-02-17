@@ -1,5 +1,5 @@
 ---
-title: "HumPlant_Example code"
+title: "HumPlant R package"
 output:
   github_document:
     toc: true
