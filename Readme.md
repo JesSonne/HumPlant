@@ -38,7 +38,7 @@ suggestions. Therefore, you must reinstall the package using the code
 below after each update. Remove the hashtag to enable the installation.
 
 ``` r
-#devtools::install_github("JeSonne/HumPlant")
+#devtools::install_github("JesSonne/HumPlant")
 ```
 
 Now load the package in your current R session.
