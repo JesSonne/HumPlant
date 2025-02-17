@@ -6,7 +6,7 @@ library(mipfp)
 zscore <- function(x){(x-mean(x))/sd(x)}
 range01 <- function(x){(x-min(x))/(max(x)-min(x))}
 
-splash_network=function(IN=net,var,by_col=F){
+tile_vector=function(IN=net,var,by_col=F){
   fill=IN;fill[]=NA
   if(by_col){fill=t(fill)}
   

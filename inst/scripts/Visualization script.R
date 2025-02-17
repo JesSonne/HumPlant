@@ -40,15 +40,15 @@ plant_abund=plant_abund[pl_ord]
 
 
 
-#####'spashing' vectors into matrix format to make them easier to work with
-hum_morph_mat=splash_network(net,hum_morph)
-plant_morph_mat=splash_network(net,plant_morph,by_col = T)
+#####'tile' vectors into matrix format to make them easier to work with
+hum_morph_mat=tile_vector(net,hum_morph)
+plant_morph_mat=tile_vector(net,plant_morph,by_col = T)
 
-hum_abund_mat=splash_network(net,hum_abund)
-plant_abund_mat=splash_network(net,plant_abund,by_col = T)
+hum_abund_mat=tile_vector(net,hum_abund)
+plant_abund_mat=tile_vector(net,plant_abund,by_col = T)
 
-hum_abund_mat=splash_network(var=hum_abund)
-plant_abund_mat=splash_network(var=plant_abund,by_col = T)
+hum_abund_mat=tile_vector(var=hum_abund)
+plant_abund_mat=tile_vector(var=plant_abund,by_col = T)
 
 ### Now, write here your models for morphological matching
 absdif=function(h=hum_morph_mat,p=plant_morph_mat,tounge=1.8){
@@ -74,7 +74,7 @@ barrier_short_flowers=function(h=hum_morph_mat,p=plant_morph_mat,prop=0.2){
   return(as.matrix(b))
 }
 
-compt_load=function(exp=1){1/splash_network(IN=net,var,by_col = T)^exp}
+compt_load=function(exp=1){1/tile_vector(IN=net,var,by_col = T)^exp}
   
 ###Write a model that represents your null hypothesis. Here is a suggestion based on the species abundances
 abundance_model=function(h=hum_abund_mat,p=plant_abund_mat){
