@@ -1,3 +1,4 @@
+#' @export
 fitinteractionModel <- function(response, countPredictors = list(), ziPredictors = list()) {
   # Check that the response matrix has row and column names
   if (!is.matrix(response) || is.null(rownames(response)) || is.null(colnames(response))) {
@@ -91,7 +92,7 @@ fitinteractionModel <- function(response, countPredictors = list(), ziPredictors
 #####
 
 
-
+#' @export
 EvaluatePredictorCombinations <- function(response, countCandidates = list(), ziCandidates = list(),maxminiter=1000) {
   # --- Check response matrix ---
   if (!is.matrix(response) || is.null(rownames(response)) || is.null(colnames(response))) {
@@ -301,7 +302,7 @@ EvaluatePredictorCombinations <- function(response, countCandidates = list(), zi
   return(results_df)
 } 
 
-
+#' @export
 repeat_function <- function(func, times, vary = list(), ...) {
   # func: the function to be called repeatedly
   # times: number of iterations
