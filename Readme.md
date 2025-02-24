@@ -72,6 +72,9 @@ net=Cajanuma$Network;net=as.matrix(net)
 hum_morph=Cajanuma$Hummingbird_morphologies
 plant_morph=Cajanuma$Plant_morphologies
 
+hum_curvature=Cajanuma$Hummingbird_curvature
+plant_curvature=Cajanuma$Plant_curvature
+
 hum_abund=Cajanuma$Hummingbird_abundances
 plant_abund=Cajanuma$Plant_abundances
 
@@ -505,12 +508,6 @@ df=data.frame(delta_AIC=results$delta_AIC,
 sub=aggregate_by_category(df = df,cat_col = "tongue_values",cont_col = "delta_AIC",func = min)
 
 plot(delta_AIC~tongue_values,data=sub,type="lines",main=select)
-```
-
-    ## Warning in plot.xy(xy, type, ...): plot type 'lines' will be truncated to first
-    ## character
-
-``` r
 abline(h=2,lty=2)
 
 #secondly for morphological matching
@@ -521,12 +518,6 @@ df=data.frame(delta_AIC=results$delta_AIC,
 sub=aggregate_by_category(df = df,cat_col = "tongue_values",cont_col = "delta_AIC",func = min)
 
 plot(delta_AIC~tongue_values,data=sub,type="lines",main=select)
-```
-
-    ## Warning in plot.xy(xy, type, ...): plot type 'lines' will be truncated to first
-    ## character
-
-``` r
 abline(h=2,lty=2)
 ```
 

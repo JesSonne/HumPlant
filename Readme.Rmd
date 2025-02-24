@@ -51,6 +51,9 @@ net=Cajanuma$Network;net=as.matrix(net)
 hum_morph=Cajanuma$Hummingbird_morphologies
 plant_morph=Cajanuma$Plant_morphologies
 
+hum_curvature=Cajanuma$Hummingbird_curvature
+plant_curvature=Cajanuma$Plant_curvature
+
 hum_abund=Cajanuma$Hummingbird_abundances
 plant_abund=Cajanuma$Plant_abundances
 
@@ -328,7 +331,7 @@ print(head(results,20))
 ```
 Let's plot the results and determine the optimal tongue length for each model, if one exists. Since the previous function generates multiple combinations of predictor variables for each tongue length, we aggregate the results to extract a single AIC value per tongue length level—the minimum value, which corresponds to the best-fitting model for that variation.  
 
-```{r}
+```{r,warning=FALSE}
 par(mfrow=c(1,2))
 #first for the morphological barrier
 select="zi_barrier_array"
