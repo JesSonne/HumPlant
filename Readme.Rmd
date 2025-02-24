@@ -318,8 +318,8 @@ results <- EvaluatePredictorCombinations(response = net,
                                          ziCandidates = pred2,
                                          maxminiter = 100000)
 
-
-print(results)
+#prints the first 20 rows
+print(head(results,20))
 
 
 
