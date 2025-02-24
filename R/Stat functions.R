@@ -29,7 +29,7 @@ fitinteractionModel <- function(response, countPredictors = list(), ziPredictors
   library(reshape2)
   
   # Melt the response matrix to long format with species identifiers
-  df <- melt(response, varnames = c("hummingbird", "plant"), value.name = "count")
+  df <- melt(response, varnames = c("plant", "hummingbird"), value.name = "count")
   
   # Process count predictor matrices
   if (length(countPredictors) > 0) {
@@ -40,9 +40,9 @@ fitinteractionModel <- function(response, countPredictors = list(), ziPredictors
     }
     for (i in seq_along(countPredictors)) {
       temp <- melt(countPredictors[[i]], 
-                   varnames = c("hummingbird", "plant"), 
+                   varnames = c("plant", "hummingbird"), 
                    value.name = countNames[i])
-      df <- merge(df, temp, by = c("hummingbird", "plant"))
+      df <- merge(df, temp, by = c("plant", "hummingbird"))
     }
     count_formula_vars <- paste(countNames, collapse = " + ")
   } else {
@@ -57,9 +57,9 @@ fitinteractionModel <- function(response, countPredictors = list(), ziPredictors
     }
     for (i in seq_along(ziPredictors)) {
       temp <- melt(ziPredictors[[i]], 
-                   varnames = c("hummingbird", "plant"), 
+                   varnames = c("plant", "hummingbird"), 
                    value.name = ziNames[i])
-      df <- merge(df, temp, by = c("hummingbird", "plant"))
+      df <- merge(df, temp, by = c("plant", "hummingbird"))
     }
     zi_formula_vars <- paste(ziNames, collapse = " + ")
   } else {
@@ -67,9 +67,9 @@ fitinteractionModel <- function(response, countPredictors = list(), ziPredictors
   }
   
   # Construct the model formulas
-  # Count (frequency) component: fixed effects from countPredictors and random effects for hummingbirds and plants.
+  # Count (frequency) component: fixed effects from countPredictors and random effects for plants and hummingbirds.
   count_formula <- as.formula(paste("count ~", count_formula_vars,
-                                    "+ (1 | hummingbird) + (1 | plant)"))
+                                    "+ (1 | plant) + (1 | hummingbird)"))
   
   # Zero-inflation (binary) component formula: fixed effects from ziPredictors
   zi_formula <- as.formula(paste("~", zi_formula_vars))
@@ -77,7 +77,7 @@ fitinteractionModel <- function(response, countPredictors = list(), ziPredictors
   # Fit the zero-inflated negative binomial model
   model <- glmmTMB(count_formula,
                    ziformula = zi_formula,
-                   family = nbinom2,
+                   family = nbinom1,
                    data = df)
   
   # Return the fitted model and the merged data frame used for modeling
@@ -124,7 +124,7 @@ EvaluatePredictorCombinations <- function(response, countCandidates = list(), zi
     candidates
   }
   
-  hum_names=colnames(net);plant_names=rownames(net)
+  hum_names=colnames(net);hummingbird_names=rownames(net)
   
   countCandidates <- process_candidates(countCandidates, "count")
   ziCandidates <- process_candidates(ziCandidates, "zero-inflation")
@@ -134,7 +134,7 @@ EvaluatePredictorCombinations <- function(response, countCandidates = list(), zi
   library(reshape2)
   
   # --- Prepare the base long-format response data ---
-  df_base <- melt(response, varnames = c("hummingbird", "plant"), value.name = "count")
+  df_base <- melt(response, varnames = c("plant", "hummingbird"), value.name = "count")
   
   # --- Helper: Generate all subsets (including empty set) from a list of candidate arrays ---
   # For each candidate in the subset, generate all possible choices of its variant (i dimension).
@@ -212,12 +212,12 @@ EvaluatePredictorCombinations <- function(response, countCandidates = list(), zi
         for (pred_name in names(count_combo$predictors)) {
           
           add=count_combo$predictors[[pred_name]]
-          rownames(add)=plant_names;colnames(add)=hum_names
+          rownames(add)=hummingbird_names;colnames(add)=hum_names
           
           temp <- melt(add,
-                       varnames = c("hummingbird", "plant"),
+                       varnames = c("plant", "hummingbird"),
                        value.name = pred_name)
-          df <- merge(df, temp, by = c("hummingbird", "plant"))
+          df <- merge(df, temp, by = c("plant", "hummingbird"))
         }
         count_formula_vars <- paste(names(count_combo$predictors), collapse = " + ")
       } else {
@@ -229,12 +229,12 @@ EvaluatePredictorCombinations <- function(response, countCandidates = list(), zi
       if (length(zi_combo$predictors) > 0) {
         for (pred_name in names(zi_combo$predictors)) {
           add=zi_combo$predictors[[pred_name]]
-          rownames(add)=plant_names;colnames(add)=hum_names
+          rownames(add)=hummingbird_names;colnames(add)=hum_names
           
           temp <- melt(add,
-                       varnames = c("hummingbird", "plant"),
+                       varnames = c("plant", "hummingbird"),
                        value.name = pred_name)
-          df <- merge(df, temp, by = c("hummingbird", "plant"))
+          df <- merge(df, temp, by = c("plant", "hummingbird"))
         }
         zi_formula_vars <- paste(names(zi_combo$predictors), collapse = " + ")
       } else {
@@ -243,7 +243,7 @@ EvaluatePredictorCombinations <- function(response, countCandidates = list(), zi
       
       # --- Construct model formulas ---
       count_formula <- as.formula(paste("count ~", count_formula_vars,
-                                        "+ (1 | hummingbird) + (1 | plant)"))
+                                        "+ (1 | plant) + (1 | hummingbird)"))
       zi_formula <- as.formula(paste("~", zi_formula_vars))
       
       # --- Fit the model and extract AIC ---
@@ -303,13 +303,15 @@ EvaluatePredictorCombinations <- function(response, countCandidates = list(), zi
 } 
 
 #' @export
-repeat_function <- function(func, times, vary = list(), ...) {
+repeat_function <- function(func, vary = list(), ...) {
   # func: the function to be called repeatedly
   # times: number of iterations
   # vary: a named list of vectors; each vector should have 'times' elements
   # ...: additional arguments to be passed to func (constant across iterations)
   
   # Pre-allocate a list to store each output matrix
+  
+  times=length(vary[[1]])
   results <- vector("list", times)
   
   for (i in seq_len(times)) {
@@ -333,7 +335,23 @@ repeat_function <- function(func, times, vary = list(), ...) {
   return(arr3d)
 }
 
-
+#' @export
+aggregate_by_category <- function(df, cat_col, cont_col,func=min) {
+  # Check if the specified columns exist in the data frame
+  if (!all(c(cat_col, cont_col) %in% names(df))) {
+    stop("One or both specified columns do not exist in the data frame.")
+  }
+  
+  # Use aggregate to compute the minimum of the continuous variable for each category
+  result <- aggregate(df[[cont_col]], 
+                      by = list(Category = df[[cat_col]]), 
+                      FUN = func)
+  
+  # Rename the resulting column for clarity
+  names(result)[1] <- paste(cat_col)
+  names(result)[2] <- paste(cont_col)
+  return(result)
+}
 
 
 

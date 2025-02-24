@@ -14,6 +14,8 @@ HumPlant R package
     abundances.](#simulate-an-interaction-network-based-on-the-species-abundances)
   - [Combining models based on abundances and
     morphologies](#combining-models-based-on-abundances-and-morphologies)
+- [Statistical analyses](#statistical-analyses)
+  - [Model selection](#model-selection)
 
 ## Visualising community structure aming interacting hummingbirds and plants
 
@@ -231,6 +233,9 @@ abundance_model=function(h=hum_abund_mat,p=plant_abund_mat){
   m=h*p
   return(m)
 }
+
+#compute the matrix
+abundance_matrix=abundance_model()
 ```
 
 Under the assumption of random interactions, there are no processes
@@ -261,12 +266,12 @@ sim_net_abund=simulate_ZI_matrix(
                            #A matrix of probabilities for two individual species to have any interactions 
                            W_bin=unit,         
                            #A matrix of weights proportional the species interaction frequencies
-                           W_freq=abundance_model(),       
+                           W_freq=abundance_matrix,       
                            ) 
 ```
 
     ##                   Nestedness Complementary specialization 
-    ##                     56.39239                      0.00000
+    ##                     34.18082                      0.00000
 
 Let’s plot it! Do you recognize this structure? For clarity, we orde the
 species in the network according to their abundance. The rarest left,
@@ -300,7 +305,7 @@ sim_net_morph_abund=simulate_ZI_matrix(
                            #A matrix of probabilities for two individual species to have any interactions 
                            W_bin=barrier_matrix,         
                            #A matrix of weights proportional the species interaction frequencies
-                           W_freq=list(abundance_model(),matching_matrix),
+                           W_freq=list(abundance_matrix,matching_matrix),
                            #how to combine the weight matrices for the binary part of the simulation
                            comb_method_bin = "product",
                            #how to combine the weight matrices for the quantitative part of the simulation
@@ -311,10 +316,65 @@ sim_net_morph_abund=simulate_ZI_matrix(
 ```
 
     ##                   Nestedness Complementary specialization 
-    ##                   32.1723331                    0.5278625
+    ##                   27.8408287                    0.4763723
 
 ``` r
 plotweb(sim_net_morph_abund,method="normal",empty = F)
 ```
 
 ![](Readme_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
+## Statistical analyses
+
+Below is a tutorial on the statistical analyses used in this project.
+They are categorized as Generalized mixture models - Mixture because of
+the zero inflation in the interaction data caused by the two-stage
+binary and quantitative processes. Within the outward-facing functions
+(i.e. FitInteractionModel, and evaluatePredictorCombinations), the
+underlying engine is the glmmTMB from glmmTMB R package
+(<https://cran.r-project.org/web/packages/glmmTMB/glmmTMB.pdf>).
+
+### Model selection
+
+The aim of this step is to identify the set of predictor variables that
+best describe the species interactions. The function below repeats the
+analyses for each combination of predictor sets. Each combination is
+evaluated by the Akaike Information Criterion (AIC).
+
+The Akaike Information Criterion (AIC) is a tool used to compare
+different statistical models. It helps choose the ‘best’ model by
+weighing how well each model fits the data against its
+complexity—simpler models are favoured when they perform nearly as well
+as more complicated ones. Essentially, a lower AIC value indicates a
+model that better balances accuracy with simplicity. Models with a
+difference in AIC \< 2 are considered equally well-fitting the data.
+
+The function returns an overview of the predictor combinations alongside
+the AIC values sorted from smallest at the top to highest at the bottom.
+The delta AIC corresponds to the difference between a focal AIC and the
+lowest AIC. Hence, the first row will always have delta AIC = 0.
+
+``` r
+#state here the names of the matrixes you want to be fitted for the quantitative and the binary part, respectively
+freq_preds=mget(c("matching_matrix","abundance_matrix"))
+zi_preds=mget(c("barrier_matrix"))
+
+# --- Evaluate Predictor Combinations ---
+results <- EvaluatePredictorCombinations(response = as.matrix(net),    #state the empirical interaction matrix
+                                         countCandidates = freq_preds, #state the list of of predictors for the quantitative part
+                                         ziCandidates = zi_preds)      #state the list of of predictors for the binary part
+
+# Print the sorted results (lowest AIC on top) with delta AIC.
+print(results)
+```
+
+    ##   count_matching_matrix count_abundance_matrix zi_barrier_matrix      AIC
+    ## 1                     1                     NA                 1 398.7876
+    ## 2                     1                     NA                NA 401.0851
+    ## 3                    NA                     NA                 1 402.1907
+    ## 4                    NA                     NA                NA 406.0623
+    ##   delta_AIC
+    ## 1  0.000000
+    ## 2  2.297490
+    ## 3  3.403074
+    ## 4  7.274701
