@@ -15,11 +15,11 @@ HumPlant R package
   - [Combining models based on abundances and
     morphologies](#combining-models-based-on-abundances-and-morphologies)
 - [Statistical analyses](#statistical-analyses)
-  - [Model selection with single predictor
-    versions](#model-selection-with-single-predictor-versions)
+  - [Model fitting with single predictor
+    versions](#model-fitting-with-single-predictor-versions)
   - [Model selection with varying predictor
     versions](#model-selection-with-varying-predictor-versions)
-  - [Model fitting](#model-fitting)
+- [References](#references)
 
 ## Visualising community structure aming interacting hummingbirds and plants
 
@@ -165,7 +165,7 @@ it make sense?
 
 ``` r
 matching_matrix=absdif(tounge=1)
-barrier_matrix=barrier_long_flowers(tounge=1.8)
+barrier_matrix=barrier_long_flowers(tounge=2.2)
 ```
 
 The function below simulates an artificial network based on your input.
@@ -213,7 +213,7 @@ sim_net_morph=simulate_ZI_matrix(
 ```
 
     ##                   Nestedness Complementary specialization 
-    ##                   20.0164723                    0.3151545
+    ##                   23.5254456                    0.2932752
 
 Now, let’s take a look at the simulated network. Does the structure
 coincide with your expectations and what could be improved?
@@ -323,240 +323,325 @@ sim_net_morph_abund=simulate_ZI_matrix(
 ```
 
     ##                   Nestedness Complementary specialization 
-    ##                   27.8408287                    0.4763723
+    ##                   26.5211540                    0.4539045
 
 ``` r
 plotweb(sim_net_morph_abund,method="normal",empty = F)
 ```
 
-![](Readme_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+![](Readme_files/figure-gfm/unnamed-chunk-16-1.png)<!-- --> \##
+Additional ecological models Below I compile additional ecological
+models suggested by you. The first is a suggestion inspired by one of
+our discussions. I also include some used in previous papers
+
+``` r
+# plants become increasingly attractive if they have few morphologically mathing partners
+competition=function(tongue_match,tongue_barrier){
+  mat=absdif(tounge = tongue_match)*barrier_long_flowers(tounge = tongue_barrier)
+  return(tile_vector(var=1/rowSums(mat),by_col = T))
+}
+
+
+#difference between the logarithmic bill and flower lengths. Discuss why such model could make ecological sense
+absdif_log=function(h=hum_morph_mat,p=plant_morph_mat,tounge=1.8){
+  m=1/(abs(log10(h*tounge)-log10(p)))
+  return(as.matrix(m))
+}
+```
 
 ## Statistical analyses
 
-Below is a tutorial on the statistical analyses used in this project.
-They are categorized as a zero-inflated negative binomial model. the
-zero inflation implies that the interaction data is influenced by a mix
-between a binary and a quantitative process. Below the outward-facing
-functions (i.e. FitInteractionModel, and evaluatePredictorCombinations),
-the underlying engine is the glmmTMB from glmmTMB R package
-(<https://cran.r-project.org/web/packages/glmmTMB/glmmTMB.pdf>).
+The methodology is derived from (Vázquez et al. 2009) and is used in
+multiple later studies. I can recommend Vizentin-Bugoni et al. (2014).
+The method uses likelihood statistics calculated from a multinomial
+distribution (‘dmultinom’). The liklihhood corresponds to the
+probability of observing the data (i.e. the empirical network), under
+the specified predictor matrices and parameter values.
 
-### Model selection with single predictor versions
+When we have the likelihood, we can calculate the Akaike Information
+Criterion (AIC) = 2k-2ln(likelihood), which is a statistical tool to
+compare different models. I penalize for model complexity (k) versus how
+well the model explains the data. Following Vizentin-Bugoni et
+al. (2014), we let k denote the number of plants \* the number of birds
+\* the number of predictor matrices.
 
-The aim of this step is to identify the set of predictor variables that
-best describe the species interactions. The function below repeats the
-analyses for each combination of predictor sets. Each combination is
-evaluated by the Akaike Information Criterion (AIC).
+Thus, the AIC helps to choose the ‘best’ model by weighing how well each
+model fits the data against its complexity—simpler models are favoured
+when they perform nearly as well as more complicated ones. Essentially,
+a lower AIC value indicates a model that better balances accuracy with
+simplicity. Models with a difference in AIC \< 2 are considered equally
+well-fitting the data.
 
-The Akaike Information Criterion (AIC) is a tool used to compare
-different statistical models. It helps choose the ‘best’ model by
-weighing how well each model fits the data against its
-complexity—simpler models are favoured when they perform nearly as well
-as more complicated ones. Essentially, a lower AIC value indicates a
-model that better balances accuracy with simplicity. Models with a
-difference in AIC \< 2 are considered equally well-fitting the data.
+### Model fitting with single predictor versions
 
-The function returns an overview of the predictor combinations alongside
-the AIC values sorted from smallest at the top to highest at the bottom.
-The delta AIC corresponds to the difference between a focal AIC and the
-lowest AIC. Hence, the first row will always have delta AIC = 0.
+Below is a function that calculates the AIC of a specified set of
+predictor variables. In this example, we include the barrier, matching,
+abundance, and the new competition model. The AIC value is meaningless
+on its own, but you can change the composition of predictor matrices and
+compare the AIC values with each other.
+
+Experiment with which combination of your predictor combinations has the
+best statistical support
 
 ``` r
-#state here the names of the matrixes you want to be fitted for the quantitative and the binary part, respectively
-freq_preds=mget(c("matching_matrix","abundance_matrix"))
-zi_preds=mget(c("barrier_matrix"))
+tongue_matching=1
+tongue_barrier=2
 
-# --- Evaluate Predictor Combinations ---
-results <- EvaluatePredictorCombinations(response = net,    #state the empirical interaction matrix
-                                         countCandidates = freq_preds, #state the list of of predictors for the quantitative part
-                                         ziCandidates = zi_preds)      #state the list of of predictors for the binary part
+matching_matrix=absdif(tounge=tongue_matching)
+barrier_matrix=barrier_long_flowers(tounge=tongue_barrier)
+competition_matrix=competition(tongue_matching,tongue_barrier)
+abundance_matrix=abundance_model()
 
-# Print the sorted results (lowest AIC on top) with delta AIC.
-print(results)
+#prepare the data
+preds=mget(c("matching_matrix","barrier_matrix","abundance_matrix","competition_matrix"))
+
+AIC=calc_AIC(preds,net)
+
+print(AIC)
 ```
 
-    ##   count_matching_matrix count_abundance_matrix zi_barrier_matrix      AIC
-    ## 1                     1                     NA                 1 398.7876
-    ## 2                     1                     NA                NA 401.0851
-    ## 3                    NA                     NA                 1 402.1907
-    ## 4                    NA                     NA                NA 406.0623
-    ##   delta_AIC
-    ## 1  0.000000
-    ## 2  2.297490
-    ## 3  3.403074
-    ## 4  7.274701
-
-The results indicate that the model incorporating all three
-predictors—morphological matching, morphological barrier, and
-abundances—fits the data better than any other combination of
-predictors.
+    ## [1] 876.6197
 
 ### Model selection with varying predictor versions
 
-The earlier analysis considered only a single version of each predictor
+The previous analysis considered only a single version of each predictor
 variable, which required us to assume specific trait values that could
 influence the models (e.g., morphological matching and morphological
 barriers such as species’ tongue lengths).
 
-The function EvaluatePredictorCombinations addresses these constraints
-by accepting a three-dimensional array instead of a matrix. This array
-is structured with dimensions h, p, and i, where h represents the number
-of hummingbirds (columns), p represents the number of plants (rows), and
-i represents the number of variations.
+We can address these constraints by recalculating the AIC for various
+matrix versions. In this example, we compute 20 variations that
+correspond to different tongue lengths. As an additional constraint, we
+consider only combinations where the tongue length for the morphological
+barrier is longer than or equal to the tongue length for morphological
+matching.
 
-In this example, we compute 20 variations that correspond to different
-tongue lengths. For the morphological barrier model, tongue lengths vary
-from 1.8 (a scenario where every plant is accessible to at least one
-hummingbird) to 5 (where all hummingbirds can access every plant). In
-contrast, we let the morphological matching model assume a broader range
-of tongue lengths (0.5 to 5), acknowledging that hummingbirds may prefer
-flowers that are shorter than their bills.
+Here, we also introduce parameters (c1, c2, and c3), which serve as
+control knobs for how strongly each matrix affects the outcome. C-values
+close to 0 effectively deactivate the influence of the predictor matrix
+(i.e., all interaction probabilities  1). Higher c-values indicate that
+species have stronger preferences for, for instance, morphological
+matching partners (i.e. c1).
+
+In this example, we calculate 20 variations of tongue lengths. For each
+combination of tongue lengths, we selected random values for c1-3,
+repeating the process 200 times. This approach is intended to reduce
+computation time. If we were to test all possible combinations of tongue
+lengths and c-values, it would take an eternity.
+
+For the morphological barrier model, tongue lengths vary from 1.8 (a
+scenario where every plant is accessible to at least one hummingbird) to
+5 (where all hummingbirds can access every plant). In contrast, we let
+the morphological matching model assume a broader range of tongue
+lengths (0.5 to 5), acknowledging that hummingbirds may prefer flowers
+that are shorter than their bills.
 
 Be aware that this step may take minutes to run!
 
 ``` r
 #Assumed variation in tongue lengths for the barrier model
-tongue_values_barrier=seq(1.8,5,length.out=20)
-
-#Compute the array predictor
-barrier_array <- repeat_function(barrier_long_flowers, vary = list(tounge = tongue_values_barrier),
-                                 h = hum_morph_mat, p = plant_morph_mat)
+tongue_values_barrier=round(seq(1.8,5,length.out=20),3)
 
 #Assumed tongue lengths for the matching model
-tongue_values_matching=seq(0.5,5,length.out=20)
-matching_array <- repeat_function(absdif, vary = list(tounge = tongue_values_matching),
-                                 h = hum_morph_mat, p = plant_morph_mat)
+tongue_values_matching=round(seq(0.5,5,length.out=20),3)
+tongue_combin=all_combinations(mget(c("tongue_values_barrier","tongue_values_matching"))) 
+
+#Subset the list to match our assumptions.
+#In this case, we assume that the that the tongue length or the binary part, should be longer or equal to the tongue length for the quantitative part
+tongue_combin_sub=subset(tongue_combin,tongue_combin$tongue_values_barrier>=tongue_combin$tongue_values_matching)
+
+# loop over the different combinations of tongue lengths and c-values
+result=data.frame(AIC=NA,tongue_matching=NA,tongue_barrier=NA,c1=NA,c2=NA,c3=NA)
+for(i in 1:nrow(tongue_combin_sub)){ # loop over tongue length combinations
+
+for(j in 1:200){ # loop 200 times selecting random c-values from a uniform distribution
+
+c1=round(runif(1,0.1,2),2)
+c2=round(runif(1,0.1,2),2)
+c3=round(runif(1,0.1,2),2)
+
+tongue_matching=tongue_combin_sub$tongue_values_matching[i]
+tongue_barrier=tongue_combin_sub$tongue_values_barrier[i]
+
+matching_matrix=absdif(tounge=tongue_matching)^c1
+barrier_matrix=barrier_long_flowers(tounge=tongue_barrier)
+competition_matrix=competition(tongue_matching,tongue_barrier)^c2
+abundance_matrix=abundance_model()^c3
+
+#prepare the data
+preds=mget(c("matching_matrix","competition_matrix","abundance_matrix","barrier_matrix"))
+
+result=rbind(result,data.frame(AIC=calc_AIC(preds,net),tongue_matching,tongue_barrier,c1,c2,c3))
+
+} # end loop j
 
 
-#Combine arrays and matrices in a list format that the analysis can read.
-#Notice that we maintain the abundance predictor in matrix format
-pred1=mget(c("matching_array","abundance_matrix"))
-pred2=mget(c("barrier_array"))
+} # en loop i  
 
-
-# --- Evaluate Predictor Combinations ---
-results <- EvaluatePredictorCombinations(response = net,
-                                         countCandidates = pred1,
-                                         ziCandidates = pred2,
-                                         maxminiter = 100000)
-
-#prints the first 20 rows
-print(head(results,20))
+result=result[complete.cases(result),]
+head(result)
 ```
 
-    ##    count_matching_array count_abundance_matrix zi_barrier_array      AIC
-    ## 1                     3                      1                3 387.3586
-    ## 2                     3                      1                4 387.9486
-    ## 3                     3                      1                5 389.3541
-    ## 4                    15                      1               18 393.1813
-    ## 5                    15                      1               19 393.1813
-    ## 6                    15                      1               20 393.1813
-    ## 7                    10                      1               18 394.2873
-    ## 8                    10                      1               19 394.2873
-    ## 9                    10                      1               20 394.2873
-    ## 10                   10                      1               11 394.5965
-    ## 11                   11                      1                2 394.6844
-    ## 12                    9                      1               18 395.3293
-    ## 13                    9                      1               19 395.3293
-    ## 14                    9                      1               20 395.3293
-    ## 15                   10                      1               NA 395.4320
-    ## 16                   10                      1                5 395.8946
-    ## 17                   10                      1                6 395.9048
-    ## 18                   10                      1                7 395.9383
-    ## 19                   10                      1                8 395.9383
-    ## 20                   10                      1                9 395.9383
-    ##    delta_AIC
-    ## 1  0.0000000
-    ## 2  0.5900109
-    ## 3  1.9955057
-    ## 4  5.8226582
-    ## 5  5.8226582
-    ## 6  5.8226582
-    ## 7  6.9286515
-    ## 8  6.9286515
-    ## 9  6.9286515
-    ## 10 7.2378918
-    ## 11 7.3258199
-    ## 12 7.9707004
-    ## 13 7.9707004
-    ## 14 7.9707004
-    ## 15 8.0733905
-    ## 16 8.5359862
-    ## 17 8.5461825
-    ## 18 8.5796673
-    ## 19 8.5796673
-    ## 20 8.5796673
+    ##        AIC tongue_matching tongue_barrier   c1   c2   c3
+    ## 2 1770.242             0.5            1.8 1.40 0.45 1.34
+    ## 3 1138.738             0.5            1.8 0.48 0.92 1.09
+    ## 4 1583.805             0.5            1.8 1.22 0.39 1.15
+    ## 5 2182.561             0.5            1.8 1.66 0.52 0.19
+    ## 6 2333.007             0.5            1.8 1.99 0.87 0.61
+    ## 7 1802.258             0.5            1.8 1.50 0.59 1.47
+
+Now, we can visualise the best-fitting models and determine the optimal
+tongue lengths and c-values, if they exist. Since the previous function
+generates multiple combinations of predictor variables for each tongue
+length, we aggregate the results to extract a single AIC value per
+tongue length level—the minimum value that corresponds to the
+best-fitting model for that variation.
+
+Let’s first vizualise the reults for tongue lengths. Horizontal dashed
+lines correspond to delta AIC \< 2 (i.e. best-fitting models)
 
 ``` r
-#Now we can plot the different tounge length against the model information criteria (AIC)
+ par(mfrow=c(1,2))
+parameter="tongue_barrier"
+sub=aggregate_by_category(df = result,cat_col = paste(parameter),cont_col = "AIC",func = min)
+plot(AIC-min(AIC)~tongue_barrier,type="lines",data=sub)
 ```
 
-Let’s plot the results and determine the optimal tongue length for each
-model, if one exists. Since the previous function generates multiple
-combinations of predictor variables for each tongue length, we aggregate
-the results to extract a single AIC value per tongue length level—the
-minimum value, which corresponds to the best-fitting model for that
-variation.
+    ## Warning in plot.xy(xy, type, ...): plot type 'lines' will be truncated to first
+    ## character
 
 ``` r
-par(mfrow=c(1,2))
-#first for the morphological barrier
-select="zi_barrier_array"
-df=data.frame(delta_AIC=results$delta_AIC,
-              tongue_values=tongue_values_barrier[results[[select]]])
-
-sub=aggregate_by_category(df = df,cat_col = "tongue_values",cont_col = "delta_AIC",func = min)
-
-plot(delta_AIC~tongue_values,data=sub,type="lines",main=select)
 abline(h=2,lty=2)
 
-#secondly for morphological matching
-select="count_matching_array"
-df=data.frame(delta_AIC=results$delta_AIC,
-              tongue_values=tongue_values_matching[results[[select]]])
+parameter="tongue_matching"
+sub=aggregate_by_category(df = result,cat_col = paste(parameter),cont_col = "AIC",func = min)
+plot(AIC-min(AIC)~tongue_matching,type="lines",data=sub)
+```
 
-sub=aggregate_by_category(df = df,cat_col = "tongue_values",cont_col = "delta_AIC",func = min)
+    ## Warning in plot.xy(xy, type, ...): plot type 'lines' will be truncated to first
+    ## character
 
-plot(delta_AIC~tongue_values,data=sub,type="lines",main=select)
+``` r
 abline(h=2,lty=2)
 ```
 
-![](Readme_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+![](Readme_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
-### Model fitting
-
-Below is a function that fits a gzero-inflated negative binomial model,
-using a specified set of predictor variables. In this example, we
-include only those predictors that were identified in the best-fitting
-model(s) shortlisted by the preceding function.
+Now lets plot the c-values. The red lines are polinomial regressions
+which we use to select the best-fitting c-value
 
 ``` r
-results=fitinteractionModel(net,countPredictors = list(matching_matrix),ziPredictors = list(barrier_matrix))
-print(results$model)
+ par(mfrow=c(1,3))
+parameter="c1"
+sub=aggregate_by_category(df = result,cat_col = paste(parameter),cont_col = "AIC",func = min)
+plot(AIC-min(AIC)~c1,type="lines",data=sub)
 ```
 
-    ## Formula:          count ~ countPred1 + (1 | plant) + (1 | hummingbird)
-    ## Zero inflation:         ~ziPred1
-    ## Data: df
-    ##       AIC       BIC    logLik  df.resid 
-    ##  398.7876  419.1762 -192.3938       129 
-    ## Random-effects (co)variances:
-    ## 
-    ## Conditional model:
-    ##  Groups      Name        Std.Dev. 
-    ##  plant       (Intercept) 8.185e-06
-    ##  hummingbird (Intercept) 7.591e-01
-    ## 
-    ## Number of obs: 136 / Conditional model: plant, 17; hummingbird, 8
-    ## 
-    ## Dispersion parameter for nbinom1 family (): 10.6 
-    ## 
-    ## Fixed Effects:
-    ## 
-    ## Conditional model:
-    ## (Intercept)   countPred1  
-    ##      0.4450       0.3106  
-    ## 
-    ## Zero-inflation model:
-    ## (Intercept)      ziPred1  
-    ##      0.2884     -19.4154
+    ## Warning in plot.xy(xy, type, ...): plot type 'lines' will be truncated to first
+    ## character
+
+``` r
+abline(h=2,lty=2)
+
+#fit polynomial regression
+x=sub[[parameter]]
+quad_model <- lm(AIC-min(AIC) ~ poly(x, 3, raw = TRUE), data = sub)
+x_seq <- seq(min(x), max(x), length.out = 100)
+
+# Predict y-values based on the fitted quadratic model
+y_pred <- predict(quad_model, newdata = data.frame(x = x_seq))
+lines(x_seq, y_pred, col = "red", lwd = 2)
+
+#the best fitting coefficient
+best_c1=x_seq[which(y_pred==min(y_pred))]
+
+
+
+sub=aggregate_by_category(df = result,cat_col = "c2",cont_col = "AIC",func = min)
+plot(AIC-min(AIC)~c2,type="lines",data=sub)
+```
+
+    ## Warning in plot.xy(xy, type, ...): plot type 'lines' will be truncated to first
+    ## character
+
+``` r
+abline(h=2,lty=2)
+
+x=sub$c2
+quad_model <- lm(AIC-min(AIC) ~ poly(x, 3, raw = TRUE), data = sub)
+x_seq <- seq(min(x), max(x), length.out = 100)
+
+# Predict y-values based on the fitted quadratic model
+y_pred <- predict(quad_model, newdata = data.frame(x = x_seq))
+lines(x_seq, y_pred, col = "red", lwd = 2)
+
+#the best fitting coefficient
+best_c2=x_seq[which(y_pred==min(y_pred))]
+
+
+
+sub=aggregate_by_category(df = result,cat_col = "c3",cont_col = "AIC",func = min)
+plot(AIC-min(AIC)~c3,type="lines",data=sub)
+```
+
+    ## Warning in plot.xy(xy, type, ...): plot type 'lines' will be truncated to first
+    ## character
+
+``` r
+abline(h=2,lty=2)
+
+x=sub$c3
+quad_model <- lm(AIC-min(AIC) ~ poly(x, 3, raw = TRUE), data = sub)
+x_seq <- seq(min(x), max(x), length.out = 100)
+# Predict y-values based on the fitted quadratic model
+y_pred <- predict(quad_model, newdata = data.frame(x = x_seq))
+lines(x_seq, y_pred, col = "red", lwd = 2)
+```
+
+![](Readme_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+
+``` r
+#the best fitting coefficient
+best_c3=x_seq[which(y_pred==min(y_pred))]
+```
+
+You can plot the predicted network based on our best fitting model and
+compare it to the empirical. We simulate 1000 random interactions and
+calculate the mean number of interactions. Average number of
+interactions less than 0.1 are set to 0. Let’s compare the simulation to
+the empirical
+
+As you can see there are still room for improvement
+
+``` r
+par(mfrow=c(2,1))
+tongue_matching=1
+tongue_barrier=1.8
+
+matching_matrix=absdif(tounge=tongue_matching)^best_c1
+barrier_matrix=barrier_long_flowers(tounge=tongue_barrier)
+competition_matrix=competition(tongue_matching,tongue_barrier)^best_c2
+abundance_matrix=abundance_model()^best_c3
+
+preds=mget(c("matching_matrix","competition_matrix","abundance_matrix","barrier_matrix"))
+
+simulate <- replicate(100, mgen(prep_predictors(preds),n = sum(net),keep.species=TRUE), simplify = FALSE)
+simulate=Reduce("+", simulate) / length(simulate);simulate[which(simulate<0.1)]=0
+
+
+plotweb(net,method = "normal");title(main ="Empirical")
+plotweb(simulate,method = "normal");title(main ="Simulated")
+```
+
+![](Readme_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+
+## References
+
+Vázquez, D. P., N. P. Chacoff, and L. Cagnolo. 2009. Evaluating multiple
+determinants of the structure of plant–animal mutualistic networks.
+Ecology 90:2039-2046.
+
+Vizentin-Bugoni, J., P. K. Maruyama, and M. Sazima. 2014. Processes
+entangling interactions in communities: forbidden links are more
+important than abundance in a hummingbird-plant network. Proceedings of
+the Royal Society B: Biological Sciences 281:20132397.
