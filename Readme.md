@@ -471,6 +471,7 @@ abundance_matrix=abundance_model()^c3
 #prepare the data
 preds=mget(c("matching_matrix","competition_matrix","abundance_matrix","barrier_matrix"))
 
+#caluclate AIC and extract parameter values
 result=rbind(result,data.frame(AIC=calc_AIC(preds,net),tongue_matching,tongue_barrier,c1,c2,c3))
 
 } # end loop j
