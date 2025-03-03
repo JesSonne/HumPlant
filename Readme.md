@@ -419,7 +419,7 @@ matching.
 Here, we also introduce parameters (c1, c2, and c3), which serve as
 control knobs for how strongly each matrix affects the outcome. C-values
 close to 0 effectively deactivate the influence of the predictor matrix
-(i.e., all interaction probabilities  1). Higher c-values indicate that
+(i.e., all interaction probabilities approx. = 1). Higher c-values indicate that
 species have stronger preferences for, for instance, morphological
 matching partners (i.e. c1).
 
