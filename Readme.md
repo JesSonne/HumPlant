@@ -213,7 +213,7 @@ sim_net_morph=simulate_ZI_matrix(
 ```
 
     ##                   Nestedness Complementary specialization 
-    ##                   23.5254456                    0.2932752
+    ##                   23.5254456                    0.2932923
 
 Now, let’s take a look at the simulated network. Does the structure
 coincide with your expectations and what could be improved?
@@ -419,9 +419,9 @@ matching.
 Here, we also introduce parameters (c1, c2, and c3), which serve as
 control knobs for how strongly each matrix affects the outcome. C-values
 close to 0 effectively deactivate the influence of the predictor matrix
-(i.e., all interaction probabilities approx. = 1). Higher c-values indicate that
-species have stronger preferences for, for instance, morphological
-matching partners (i.e. c1).
+(i.e., all interaction probabilities approx. = 1). Higher c-values
+indicate that species have stronger preferences for, for instance,
+morphological matching partners (i.e. c1).
 
 In this example, we calculate 20 variations of tongue lengths. For each
 combination of tongue lengths, we selected random values for c1-3,
@@ -471,7 +471,7 @@ abundance_matrix=abundance_model()^c3
 #prepare the data
 preds=mget(c("matching_matrix","competition_matrix","abundance_matrix","barrier_matrix"))
 
-#caluclate AIC and extract parameter values
+#calculate AIC and extract parameter values
 result=rbind(result,data.frame(AIC=calc_AIC(preds,net),tongue_matching,tongue_barrier,c1,c2,c3))
 
 } # end loop j
@@ -484,12 +484,12 @@ head(result)
 ```
 
     ##        AIC tongue_matching tongue_barrier   c1   c2   c3
-    ## 2 1770.242             0.5            1.8 1.40 0.45 1.34
-    ## 3 1138.738             0.5            1.8 0.48 0.92 1.09
-    ## 4 1583.805             0.5            1.8 1.22 0.39 1.15
-    ## 5 2182.561             0.5            1.8 1.66 0.52 0.19
-    ## 6 2333.007             0.5            1.8 1.99 0.87 0.61
-    ## 7 1802.258             0.5            1.8 1.50 0.59 1.47
+    ## 2 2215.511             0.5            1.8 1.92 0.86 1.83
+    ## 3  951.759             0.5            1.8 0.41 0.43 1.42
+    ## 4 3459.941             0.5            1.8 0.37 1.95 1.59
+    ## 5 1182.443             0.5            1.8 0.45 1.00 0.68
+    ## 6 1149.605             0.5            1.8 0.97 1.02 0.43
+    ## 7 2128.593             0.5            1.8 0.26 1.20 1.96
 
 Now, we can visualise the best-fitting models and determine the optimal
 tongue lengths and c-values, if they exist. Since the previous function
@@ -506,42 +506,25 @@ lines correspond to delta AIC \< 2 (i.e. best-fitting models)
 parameter="tongue_barrier"
 sub=aggregate_by_category(df = result,cat_col = paste(parameter),cont_col = "AIC",func = min)
 plot(AIC-min(AIC)~tongue_barrier,type="lines",data=sub)
-```
-
-    ## Warning in plot.xy(xy, type, ...): plot type 'lines' will be truncated to first
-    ## character
-
-``` r
 abline(h=2,lty=2)
 
 parameter="tongue_matching"
 sub=aggregate_by_category(df = result,cat_col = paste(parameter),cont_col = "AIC",func = min)
 plot(AIC-min(AIC)~tongue_matching,type="lines",data=sub)
-```
-
-    ## Warning in plot.xy(xy, type, ...): plot type 'lines' will be truncated to first
-    ## character
-
-``` r
 abline(h=2,lty=2)
 ```
 
 ![](Readme_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
 Now lets plot the c-values. The red lines are polinomial regressions
-which we use to select the best-fitting c-value
+which we use to select the best-fitting c-value (i.e. the value on the
+x-axis matching the bottom of the red curve).
 
 ``` r
  par(mfrow=c(1,3))
 parameter="c1"
 sub=aggregate_by_category(df = result,cat_col = paste(parameter),cont_col = "AIC",func = min)
 plot(AIC-min(AIC)~c1,type="lines",data=sub)
-```
-
-    ## Warning in plot.xy(xy, type, ...): plot type 'lines' will be truncated to first
-    ## character
-
-``` r
 abline(h=2,lty=2)
 
 #fit polynomial regression
@@ -560,12 +543,6 @@ best_c1=x_seq[which(y_pred==min(y_pred))]
 
 sub=aggregate_by_category(df = result,cat_col = "c2",cont_col = "AIC",func = min)
 plot(AIC-min(AIC)~c2,type="lines",data=sub)
-```
-
-    ## Warning in plot.xy(xy, type, ...): plot type 'lines' will be truncated to first
-    ## character
-
-``` r
 abline(h=2,lty=2)
 
 x=sub$c2
@@ -583,12 +560,6 @@ best_c2=x_seq[which(y_pred==min(y_pred))]
 
 sub=aggregate_by_category(df = result,cat_col = "c3",cont_col = "AIC",func = min)
 plot(AIC-min(AIC)~c3,type="lines",data=sub)
-```
-
-    ## Warning in plot.xy(xy, type, ...): plot type 'lines' will be truncated to first
-    ## character
-
-``` r
 abline(h=2,lty=2)
 
 x=sub$c3
@@ -609,8 +580,9 @@ best_c3=x_seq[which(y_pred==min(y_pred))]
 You can plot the predicted network based on our best fitting model and
 compare it to the empirical. We simulate 1000 random interactions and
 calculate the mean number of interactions. Average number of
-interactions less than 0.1 are set to 0. Let’s compare the simulation to
-the empirical
+interactions less than 0.1 are set to 0.
+
+Let’s compare the simulation to the empirical
 
 As you can see there are still room for improvement
 
