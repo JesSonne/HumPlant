@@ -1,6 +1,7 @@
 library(scales)
 library(bipartite)
 library(mipfp)
+require(MuMIn)
 
 
 zscore <- function(x){(x-mean(x))/sd(x)}
