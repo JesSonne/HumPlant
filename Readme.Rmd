@@ -253,6 +253,7 @@ sim_net_morph_abund=simulate_ZI_matrix(
 plotweb(sim_net_morph_abund,method="normal",empty = F)
 
 ```
+
 ## Additional ecological models
 Below I compile additional ecological models suggested by you. The first is a suggestion inspired by one of our discussions. I also include some used in previous papers
 ```{r}
