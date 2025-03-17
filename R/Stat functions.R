@@ -367,7 +367,7 @@ prep_predictors=function(preds){
   return(preds)
 }
 #' @export
-calc_AIC=function(preds,net,k=(sum(dim(net))*length(preds)){
+calc_AIC=function(preds,net,k=sum(dim(net))*length(preds)){
   n_mat=length(preds)
   if(n_mat>1){
     preds=Reduce(`*`, lapply(preds,function(x) x / sum(x)))
@@ -382,6 +382,7 @@ calc_AIC=function(preds,net,k=(sum(dim(net))*length(preds)){
   
   return(AIC_X) 
 }
+
 #' @export
 all_combinations <- function(vec_list) {
   # Get the Cartesian product as a data.frame
