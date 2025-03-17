@@ -367,7 +367,7 @@ prep_predictors=function(preds){
   return(preds)
 }
 #' @export
-calc_AIC=function(pred_mat,net){
+calc_AIC=function(preds,net,k=(sum(dim(net))*length(preds)){
   n_mat=length(preds)
   if(n_mat>1){
     preds=Reduce(`*`, lapply(preds,function(x) x / sum(x)))
@@ -378,7 +378,7 @@ calc_AIC=function(pred_mat,net){
   
   preds=preds/sum(preds)
   
-  AIC_X<- -2*dmultinom(c(net), prob=c(preds), log=T) + 2*(sum(dim(net))*n_mat)
+  AIC_X<- -2*dmultinom(c(net), prob=c(preds), log=T) + 2*k
   
   return(AIC_X) 
 }
