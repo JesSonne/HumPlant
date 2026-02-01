@@ -14,7 +14,6 @@ HumPlant R package
     abundances.](#simulate-an-interaction-network-based-on-the-species-abundances)
   - [Combining models based on abundances and
     morphologies](#combining-models-based-on-abundances-and-morphologies)
-- [Additional ecological models](#additional-ecological-models)
 - [Statistical analyses](#statistical-analyses)
   - [Model fitting with single predictor
     versions](#model-fitting-with-single-predictor-versions)
