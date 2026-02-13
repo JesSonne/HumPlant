@@ -10,9 +10,9 @@ date: "2025-02-14"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Visualising community structure of interacting hummingbirds and plants
+## Visualising ecological mechanisms affecting interacting hummingbirds and plants
 
-The following script will guide you through examples of how to model mechanisms, such as morphological matching, and visualise their effects on species interactions.  
+The following script will guide you through examples of how to model ecological mechanisms, such as morphological matching, and visualise their effects on species interactions.  
 
 
 ### Installing the package
@@ -91,7 +91,7 @@ plant_abund_mat=tile_vector(var=plant_abund,by_col = T)
 The code below defines two initial models for how the morphologies of species might influence the species’ interactions. These are just two examples to get you started. In the project, you should come up with additional models that perhaps better capture the structure of the community. I will help you write the code as long as you can specifically formulate your hypotheses.
 
 
-The first is based on the ‘forbidden links’ concept in which species are prevented from visiting certain partners in the community. In this case, hummingbirds are prevented from visiting flowers that are longer than their bill + tounge length. The tounge length is defined as a fraction of the total bill length.
+The first is based on the ‘forbidden links’ concept in which species are prevented from visiting certain partners in the community. In this case, hummingbirds are prevented from visiting flowers that are longer than their bill + tounge length. Here, The tounge length is estimated as a fraction of the total bill length.
 
 
 The second model is derived from optimal foraging theory, where hummingbirds should prefer visiting flowers that are morphologically similar to their bills. Here, we simply subtract the two measurements from each other and take the absolute value. 0 will reflect a perfect match, and higher values reflect increasing mismatch. For convenience, we take inverse, such that higher values represent greater morphological matching.
@@ -208,7 +208,7 @@ sim_net_abund=simulate_ZI_matrix(
                            #A matrix of probabilities for two individual species to have any interactions 
                            W_bin=unit,         
                            #A matrix of weights proportional the species interaction frequencies
-                           W_freq=abundance_matrix,       
+                           W_freq=abundance_matrix^2,       
                            ) 
 
 ```
@@ -254,8 +254,8 @@ plotweb(sim_net_morph_abund,sorting ="normal",empty = F,horizontal = TRUE, curve
 
 ```
 
-## Additional ecological models
-Below I compile additional ecological models suggested by you. The first is a suggestion inspired by one of our discussions. I also include some used in previous papers
+## Additional ecological models 
+Below are additional ecological models suggested by previous students. You are welcome to include them in your project
 ```{r}
 # plants become increasingly attractive if they have few morphologically mathing partners
 competition=function(tongue_match,tongue_barrier){

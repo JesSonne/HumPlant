@@ -2,8 +2,9 @@ HumPlant R package
 ================
 2025-02-14
 
-- [Visualising community structure aming interacting hummingbirds and
-  plants](#visualising-community-structure-aming-interacting-hummingbirds-and-plants)
+- [Visualising ecological mechanisms affecting interacting hummingbirds
+  and
+  plants](#visualising-ecological-mechanisms-affecting-interacting-hummingbirds-and-plants)
   - [Installing the package](#installing-the-package)
   - [Taking a look at the data](#taking-a-look-at-the-data)
   - [Defining models for how morphologies influence the species’
@@ -22,11 +23,11 @@ HumPlant R package
     versions](#model-selection-with-varying-predictor-versions)
 - [References](#references)
 
-## Visualising community structure aming interacting hummingbirds and plants
+## Visualising ecological mechanisms affecting interacting hummingbirds and plants
 
 The following script will guide you through examples of how to model
-mechanisms, such as morphological matching, and visualise their effects
-on species interactions.
+ecological mechanisms, such as morphological matching, and visualise
+their effects on species interactions.
 
 ### Installing the package
 
@@ -91,7 +92,7 @@ species are sorted according to the length of their bill/flowers from
 the shortest bills/flowers on the left to the longest on the right.
 
 ``` r
-plotweb(net,sorting="normal",empty = F)
+plotweb(net,sorting="normal",empty = F,horizontal = TRUE, curved_links = TRUE,text_size=1)
 ```
 
 ![](Readme_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
@@ -123,8 +124,8 @@ specifically formulate your hypotheses.
 The first is based on the ‘forbidden links’ concept in which species are
 prevented from visiting certain partners in the community. In this case,
 hummingbirds are prevented from visiting flowers that are longer than
-their bill + tounge length. The tounge length is defined as a fraction
-of the total bill length.
+their bill + tounge length. Here, The tounge length is estimated as a
+fraction of the total bill length.
 
 The second model is derived from optimal foraging theory, where
 hummingbirds should prefer visiting flowers that are morphologically
@@ -214,13 +215,13 @@ sim_net_morph=simulate_ZI_matrix(
 ```
 
     ##                   Nestedness Complementary specialization 
-    ##                   23.5254456                    0.2932624
+    ##                   23.5254456                    0.2932752
 
 Now, let’s take a look at the simulated network. Does the structure
 coincide with your expectations and what could be improved?
 
 ``` r
-plotweb(sim_net_morph,sorting="normal",empty = F)
+plotweb(sim_net_morph,sorting="normal",empty = F,horizontal = TRUE, curved_links = TRUE,text_size=1)
 ```
 
 ![](Readme_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
@@ -274,12 +275,12 @@ sim_net_abund=simulate_ZI_matrix(
                            #A matrix of probabilities for two individual species to have any interactions 
                            W_bin=unit,         
                            #A matrix of weights proportional the species interaction frequencies
-                           W_freq=abundance_matrix,       
+                           W_freq=abundance_matrix^2,       
                            ) 
 ```
 
     ##                   Nestedness Complementary specialization 
-    ##                     34.18082                      0.00000
+    ##                     43.62147                      0.00000
 
 Let’s plot it! Do you recognize this structure? For clarity, we orde the
 species in the network according to their abundance. The rarest left,
@@ -289,7 +290,7 @@ and the most common species is on the right.
 sim_net_abund=sim_net_abund[order(plant_abund),]
 sim_net_abund=sim_net_abund[,order(hum_abund)]
 
-plotweb(sim_net_abund,sorting="normal",empty = F)
+plotweb(sim_net_abund,sorting="normal",empty = F,horizontal = TRUE, curved_links = TRUE,text_size=1)
 ```
 
 ![](Readme_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
@@ -327,16 +328,15 @@ sim_net_morph_abund=simulate_ZI_matrix(
     ##                   26.5211540                    0.4539045
 
 ``` r
-plotweb(sim_net_morph_abund,sorting ="normal",empty = F)
+plotweb(sim_net_morph_abund,sorting ="normal",empty = F,horizontal = TRUE, curved_links = TRUE,text_size=1)
 ```
 
 ![](Readme_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
 ## Additional ecological models
 
-Below I compile additional ecological models suggested by you. The first
-is a suggestion inspired by one of our discussions. I also include some
-used in previous papers
+Below are additional ecological models suggested by previous students.
+You are welcome to include them in your project
 
 ``` r
 # plants become increasingly attractive if they have few morphologically mathing partners
@@ -488,12 +488,12 @@ head(result)
 ```
 
     ##        AIC tongue_matching tongue_barrier   c1   c2   c3
-    ## 2 8550.956             0.5            1.8 1.43 1.92 0.94
-    ## 3 8871.508             0.5            1.8 0.92 1.90 0.67
-    ## 4 8210.031             0.5            1.8 1.42 1.53 1.58
-    ## 5 7732.240             0.5            1.8 0.76 0.89 1.59
-    ## 6 8843.955             0.5            1.8 1.67 0.39 0.61
-    ## 7 8220.373             0.5            1.8 0.30 0.99 1.85
+    ## 2 9650.230             0.5            1.8 0.38 1.89 1.11
+    ## 3 8407.285             0.5            1.8 0.67 1.28 1.81
+    ## 4 8972.617             0.5            1.8 1.89 0.61 1.89
+    ## 5 7768.301             0.5            1.8 1.06 0.92 1.31
+    ## 6 8208.186             0.5            1.8 0.73 1.50 0.22
+    ## 7 7963.152             0.5            1.8 0.50 1.13 0.97
 
 Now, we can visualise the best-fitting models and determine the optimal
 tongue lengths and c-values, if they exist. Since the previous function
@@ -606,8 +606,8 @@ simulate <- replicate(100, mgen(prep_predictors(preds),n = sum(net),keep.species
 simulate=Reduce("+", simulate) / length(simulate);simulate[which(simulate<0.1)]=0
 
 
-plotweb(net,sorting = "normal");title(main ="Empirical")
-plotweb(simulate,sorting = "normal");title(main ="Simulated")
+plotweb(net,sorting = "normal",horizontal = TRUE, curved_links = TRUE,text_size=1);title(main ="Empirical")
+plotweb(simulate,sorting = "normal",horizontal = TRUE, curved_links = TRUE,text_size=1);title(main ="Simulated")
 ```
 
 ![](Readme_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
