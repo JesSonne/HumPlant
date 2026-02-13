@@ -254,6 +254,8 @@ plotweb(sim_net_morph_abund,sorting ="normal",empty = F,horizontal = TRUE, curve
 
 ```
 
+<<<<<<< HEAD
+=======
 ## Additional ecological models 
 Below are additional ecological models suggested by previous students. You are welcome to include them in your project
 ```{r}
@@ -275,6 +277,7 @@ absdif_log=function(h=hum_morph_mat,p=plant_morph_mat,tounge=1.8){
 
 ```
 
+>>>>>>> OrnithologyCourse2025
 ## Statistical analyses 
 The methodology is derived from (Vázquez et al. 2009) and is used in multiple later studies. I can recommend Vizentin-Bugoni et al. (2014). The method uses likelihood statistics calculated from a multinomial distribution (‘dmultinom’). The liklihhood corresponds to the probability of observing the data (i.e. the empirical network), under the specified predictor matrices and parameter values. 
 

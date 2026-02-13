@@ -15,7 +15,6 @@ HumPlant R package
     abundances.](#simulate-an-interaction-network-based-on-the-species-abundances)
   - [Combining models based on abundances and
     morphologies](#combining-models-based-on-abundances-and-morphologies)
-- [Additional ecological models](#additional-ecological-models)
 - [Statistical analyses](#statistical-analyses)
   - [Model fitting with single predictor
     versions](#model-fitting-with-single-predictor-versions)
@@ -333,6 +332,8 @@ plotweb(sim_net_morph_abund,sorting ="normal",empty = F,horizontal = TRUE, curve
 
 ![](Readme_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
+<<<<<<< HEAD
+=======
 ## Additional ecological models
 
 Below are additional ecological models suggested by previous students.
@@ -353,6 +354,7 @@ absdif_log=function(h=hum_morph_mat,p=plant_morph_mat,tounge=1.8){
 }
 ```
 
+>>>>>>> OrnithologyCourse2025
 ## Statistical analyses
 
 The methodology is derived from (Vázquez et al. 2009) and is used in
