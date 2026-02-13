@@ -15,6 +15,7 @@ HumPlant R package
     abundances.](#simulate-an-interaction-network-based-on-the-species-abundances)
   - [Combining models based on abundances and
     morphologies](#combining-models-based-on-abundances-and-morphologies)
+- [Additional ecological models](#additional-ecological-models)
 - [Statistical analyses](#statistical-analyses)
   - [Model fitting with single predictor
     versions](#model-fitting-with-single-predictor-versions)
@@ -214,7 +215,7 @@ sim_net_morph=simulate_ZI_matrix(
 ```
 
     ##                   Nestedness Complementary specialization 
-    ##                   23.5254456                    0.2932752
+    ##                   23.5254456                    0.2932923
 
 Now, let’s take a look at the simulated network. Does the structure
 coincide with your expectations and what could be improved?
@@ -332,8 +333,6 @@ plotweb(sim_net_morph_abund,sorting ="normal",empty = F,horizontal = TRUE, curve
 
 ![](Readme_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
-<<<<<<< HEAD
-=======
 ## Additional ecological models
 
 Below are additional ecological models suggested by previous students.
@@ -354,7 +353,6 @@ absdif_log=function(h=hum_morph_mat,p=plant_morph_mat,tounge=1.8){
 }
 ```
 
->>>>>>> OrnithologyCourse2025
 ## Statistical analyses
 
 The methodology is derived from (Vázquez et al. 2009) and is used in
@@ -490,12 +488,12 @@ head(result)
 ```
 
     ##        AIC tongue_matching tongue_barrier   c1   c2   c3
-    ## 2 9650.230             0.5            1.8 0.38 1.89 1.11
-    ## 3 8407.285             0.5            1.8 0.67 1.28 1.81
-    ## 4 8972.617             0.5            1.8 1.89 0.61 1.89
-    ## 5 7768.301             0.5            1.8 1.06 0.92 1.31
-    ## 6 8208.186             0.5            1.8 0.73 1.50 0.22
-    ## 7 7963.152             0.5            1.8 0.50 1.13 0.97
+    ## 2 8134.583             0.5            1.8 1.66 1.47 0.40
+    ## 3 9131.775             0.5            1.8 0.61 1.90 0.53
+    ## 4 7927.930             0.5            1.8 1.29 0.96 1.29
+    ## 5 7667.931             0.5            1.8 0.35 0.17 0.48
+    ## 6 9440.189             0.5            1.8 1.94 0.19 0.72
+    ## 7 7916.685             0.5            1.8 1.20 1.29 1.22
 
 Now, we can visualise the best-fitting models and determine the optimal
 tongue lengths and c-values, if they exist. Since the previous function
