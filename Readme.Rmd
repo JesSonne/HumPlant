@@ -10,10 +10,7 @@ date: "2025-02-14"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-#This version was used on the course in 2025
-
-
-## Visualising community structure aming interacting hummingbirds and plants
+## Visualising community structure of interacting hummingbirds and plants
 
 The following script will guide you through examples of how to model mechanisms, such as morphological matching, and visualise their effects on species interactions.  
 
@@ -70,7 +67,7 @@ n_plants=nrow(net)
 Use the ‘plotweb’ function to visualise the network. Notice that the species are sorted according to the length of their bill/flowers from the shortest bills/flowers on the left to the longest on the right.
 
 ```{r,echo = T, message=T }
-plotweb(net,method="normal",empty = F)
+plotweb(net,sorting="normal",empty = F,horizontal = TRUE, curved_links = TRUE,text_size=1)
 ```
 
 
@@ -168,7 +165,7 @@ sim_net_morph=simulate_ZI_matrix(
 Now, let’s take a look at the simulated network. Does the structure coincide with your expectations and what could be improved?
   
 ```{r,echo = T, message=T }
-plotweb(sim_net_morph,method="normal",empty = F)
+plotweb(sim_net_morph,sorting="normal",empty = F,horizontal = TRUE, curved_links = TRUE,text_size=1)
 
 ```
 
@@ -222,7 +219,7 @@ Let’s plot it! Do you recognize this structure? For clarity, we orde the speci
 sim_net_abund=sim_net_abund[order(plant_abund),]
 sim_net_abund=sim_net_abund[,order(hum_abund)]
 
-plotweb(sim_net_abund,method="normal",empty = F)
+plotweb(sim_net_abund,sorting="normal",empty = F,horizontal = TRUE, curved_links = TRUE,text_size=1)
 
 ```
 
@@ -253,7 +250,7 @@ sim_net_morph_abund=simulate_ZI_matrix(
                            normalize = TRUE,
                            ) 
 
-plotweb(sim_net_morph_abund,method="normal",empty = F)
+plotweb(sim_net_morph_abund,sorting ="normal",empty = F,horizontal = TRUE, curved_links = TRUE,text_size=1)
 
 ```
 
@@ -475,8 +472,8 @@ simulate <- replicate(100, mgen(prep_predictors(preds),n = sum(net),keep.species
 simulate=Reduce("+", simulate) / length(simulate);simulate[which(simulate<0.1)]=0
 
 
-plotweb(net,method = "normal");title(main ="Empirical")
-plotweb(simulate,method = "normal");title(main ="Simulated")
+plotweb(net,sorting = "normal",horizontal = TRUE, curved_links = TRUE,text_size=1);title(main ="Empirical")
+plotweb(simulate,sorting = "normal",horizontal = TRUE, curved_links = TRUE,text_size=1);title(main ="Simulated")
 
 ```
 
