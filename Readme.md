@@ -55,6 +55,12 @@ Now load the package in your current R session.
 library(HumPlant)
 ```
 
+    ## Warning: package 'statnet.common' was built under R version 4.4.3
+
+    ## Warning: package 'network' was built under R version 4.4.3
+
+    ## Warning: package 'permute' was built under R version 4.4.3
+
 ### Taking a look at the data
 
 The object ‘Cajanuma’ contains the data I collected at the
@@ -215,7 +221,7 @@ sim_net_morph=simulate_ZI_matrix(
 ```
 
     ##                   Nestedness Complementary specialization 
-    ##                   23.5254456                    0.2932923
+    ##                   23.5254456                    0.2932752
 
 Now, let’s take a look at the simulated network. Does the structure
 coincide with your expectations and what could be improved?
@@ -488,12 +494,12 @@ head(result)
 ```
 
     ##        AIC tongue_matching tongue_barrier   c1   c2   c3
-    ## 2 8134.583             0.5            1.8 1.66 1.47 0.40
-    ## 3 9131.775             0.5            1.8 0.61 1.90 0.53
-    ## 4 7927.930             0.5            1.8 1.29 0.96 1.29
-    ## 5 7667.931             0.5            1.8 0.35 0.17 0.48
-    ## 6 9440.189             0.5            1.8 1.94 0.19 0.72
-    ## 7 7916.685             0.5            1.8 1.20 1.29 1.22
+    ## 2 8578.306             0.5            1.8 1.78 0.99 0.23
+    ## 3 9225.093             0.5            1.8 0.13 1.75 0.25
+    ## 4 7632.278             0.5            1.8 0.62 0.85 0.66
+    ## 5 8002.315             0.5            1.8 1.37 1.15 1.70
+    ## 6 8223.854             0.5            1.8 1.11 0.16 1.60
+    ## 7 8780.328             0.5            1.8 1.80 1.98 1.83
 
 Now, we can visualise the best-fitting models and determine the optimal
 tongue lengths and c-values, if they exist. Since the previous function

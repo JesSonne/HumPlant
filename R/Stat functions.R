@@ -1,4 +1,4 @@
-#' @export
+
 fitinteractionModel <- function(response, countPredictors = list(), ziPredictors = list()) {
   # Check that the response matrix has row and column names
   if (!is.matrix(response) || is.null(rownames(response)) || is.null(colnames(response))) {
@@ -92,7 +92,6 @@ fitinteractionModel <- function(response, countPredictors = list(), ziPredictors
 #####
 
 
-#' @export
 EvaluatePredictorCombinations <- function(response, countCandidates = list(), ziCandidates = list(),maxminiter=1000) {
   # --- Check response matrix ---
   if (!is.matrix(response) || is.null(rownames(response)) || is.null(colnames(response))) {
@@ -302,7 +301,7 @@ EvaluatePredictorCombinations <- function(response, countCandidates = list(), zi
   return(results_df)
 } 
 
-#' @export
+
 repeat_function <- function(func, vary = list(), ...) {
   # func: the function to be called repeatedly
   # times: number of iterations
@@ -335,7 +334,6 @@ repeat_function <- function(func, vary = list(), ...) {
   return(arr3d)
 }
 
-#' @export
 aggregate_by_category <- function(df, cat_col, cont_col,func=min) {
   # Check if the specified columns exist in the data frame
   if (!all(c(cat_col, cont_col) %in% names(df))) {
@@ -353,7 +351,6 @@ aggregate_by_category <- function(df, cat_col, cont_col,func=min) {
   return(result)
 }
 
-#' @export
 prep_predictors=function(preds){
   n_mat=length(preds)
   if(n_mat>1){
@@ -366,7 +363,8 @@ prep_predictors=function(preds){
   preds=preds/sum(preds)
   return(preds)
 }
-#' @export
+
+
 calc_AIC=function(preds,net,k=sum(dim(net))*length(preds)){
   n_mat=length(preds)
   if(n_mat>1){
@@ -383,7 +381,7 @@ calc_AIC=function(preds,net,k=sum(dim(net))*length(preds)){
   return(AIC_X) 
 }
 
-#' @export
+
 all_combinations <- function(vec_list) {
   # Get the Cartesian product as a data.frame
   result <- do.call(expand.grid, vec_list)
