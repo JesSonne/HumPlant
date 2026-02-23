@@ -215,7 +215,7 @@ sim_net_morph=simulate_ZI_matrix(
 ```
 
     ##                   Nestedness Complementary specialization 
-    ##                   23.5254456                    0.2932752
+    ##                   23.5254456                    0.2932109
 
 Now, let’s take a look at the simulated network. Does the structure
 coincide with your expectations and what could be improved?
@@ -509,13 +509,13 @@ result=result[complete.cases(result),]
 head(result)
 ```
 
-    ##         AIC tongue_matching tongue_barrier   c1   c2   c3
-    ## 2  741.1133             0.5            1.8 0.31 0.38 1.03
-    ## 3  906.7729             0.5            1.8 0.89 0.88 1.33
-    ## 4 1573.8052             0.5            1.8 1.90 1.48 1.31
-    ## 5  786.7828             0.5            1.8 0.40 0.31 1.56
-    ## 6  805.1805             0.5            1.8 0.41 0.63 0.52
-    ## 7 1554.3277             0.5            1.8 1.88 1.46 1.22
+    ##        AIC tongue_matching tongue_barrier   c1   c2   c3
+    ## 2 2263.506             0.5            1.8 0.17 1.63 0.57
+    ## 3 1798.387             0.5            1.8 1.24 1.86 0.91
+    ## 4 1504.380             0.5            1.8 1.47 0.68 1.36
+    ## 5 1089.909             0.5            1.8 0.75 0.29 0.27
+    ## 6 2274.971             0.5            1.8 0.54 1.82 0.59
+    ## 7 1059.363             0.5            1.8 0.93 0.45 1.78
 
 Now, we can visualise the best-fitting models and determine the optimal
 tongue lengths and c values, if they exist. Since the previous function
