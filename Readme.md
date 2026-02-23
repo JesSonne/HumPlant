@@ -215,7 +215,7 @@ sim_net_morph=simulate_ZI_matrix(
 ```
 
     ##                   Nestedness Complementary specialization 
-    ##                   23.5254456                    0.2932923
+    ##                   23.5254456                    0.2932752
 
 Now, let’s take a look at the simulated network. Does the structure
 coincide with your expectations and what could be improved?
@@ -345,6 +345,21 @@ competition=function(tongue_match,tongue_barrier){
   return(tile_vector(var=1/rowSums(mat),by_col = T))
 }
 
+competition_abund <- function(h=hum_morph_mat, p=plant_morph_mat,
+                        a=hum_abund_mat,
+                        tongue_match = 1.0,
+                        tongue_barrier = 2.2) {
+  
+  #model or morphological matching + barrier
+  mat=absdif(h,p,tongue_match)*barrier_long_flowers(h,p,tongue_barrier)
+  
+  #sum of morphological morphological matching * aundance for each plant
+  out=rowSums(mat*a)
+  
+  #inverse means less competition for plants that have few morphological matching partners 
+  return(1/out)
+
+}
 
 #difference between the logarithmic bill and flower lengths. Discuss why such model could make ecological sense
 absdif_log=function(h=hum_morph_mat,p=plant_morph_mat,tounge=1.8){
@@ -365,9 +380,12 @@ the specified predictor matrices and parameter values.
 When we have the likelihood, we can calculate the Akaike Information
 Criterion (AIC) = 2k-2ln(likelihood), which is a statistical tool to
 compare different models. I penalize for model complexity (k) versus how
-well the model explains the data. Following Vizentin-Bugoni et
-al. (2014), we let k denote the number of plants \* the number of birds
-\* the number of predictor matrices.
+well the model explains the data. k is the number of free parameters in
+the model, meaning the number of parameters that is estimated by the
+model. So far, we are not estimating any parameters (all values, such as
+tongue lengths and predictor strength, are defined). In that case, we
+follow following Vázquez et al. 2009, we let k equal the number of
+predictor matrices in the model (k=4).
 
 Thus, the AIC helps to choose the ‘best’ model by weighing how well each
 model fits the data against its complexity—simpler models are favoured
@@ -399,12 +417,12 @@ abundance_matrix=abundance_model()
 #prepare the data
 preds=mget(c("matching_matrix","barrier_matrix","abundance_matrix","competition_matrix"))
 
-AIC=calc_AIC(preds,net)
+AIC=calc_AIC(preds,net,k = 4)
 
 print(AIC)
 ```
 
-    ## [1] 7476.62
+    ## [1] 684.6197
 
 ### Model selection with varying predictor versions
 
@@ -421,11 +439,15 @@ barrier is longer than or equal to the tongue length for morphological
 matching.
 
 Here, we also introduce parameters (c1, c2, and c3), which serve as
-control knobs for how strongly each matrix affects the outcome. C-values
+control knobs for how strongly each matrix affects the outcome. C values
 close to 0 effectively deactivate the influence of the predictor matrix
-(i.e., all interaction probabilities approx. = 1). Higher c-values
+(i.e., all interaction probabilities approx. = 1). Higher c values
 indicate that species have stronger preferences for, for instance,
 morphological matching partners (i.e. c1).
+
+Since we let R estimate the c values and tongue lengths, we need to
+redefine k (the number of free parameters in the model). Each c value
+and tongue length counts one. That would mean that full model has k=5.
 
 In this example, we calculate 20 variations of tongue lengths. For each
 combination of tongue lengths, we selected random values for c1-3,
@@ -476,7 +498,7 @@ abundance_matrix=abundance_model()^c3
 preds=mget(c("matching_matrix","competition_matrix","abundance_matrix","barrier_matrix"))
 
 #calculate AIC and extract parameter values
-result=rbind(result,data.frame(AIC=calc_AIC(preds,net),tongue_matching,tongue_barrier,c1,c2,c3))
+result=rbind(result,data.frame(AIC=calc_AIC(preds,net,k = 5),tongue_matching,tongue_barrier,c1,c2,c3))
 
 } # end loop j
 
@@ -487,16 +509,16 @@ result=result[complete.cases(result),]
 head(result)
 ```
 
-    ##        AIC tongue_matching tongue_barrier   c1   c2   c3
-    ## 2 8134.583             0.5            1.8 1.66 1.47 0.40
-    ## 3 9131.775             0.5            1.8 0.61 1.90 0.53
-    ## 4 7927.930             0.5            1.8 1.29 0.96 1.29
-    ## 5 7667.931             0.5            1.8 0.35 0.17 0.48
-    ## 6 9440.189             0.5            1.8 1.94 0.19 0.72
-    ## 7 7916.685             0.5            1.8 1.20 1.29 1.22
+    ##         AIC tongue_matching tongue_barrier   c1   c2   c3
+    ## 2  741.1133             0.5            1.8 0.31 0.38 1.03
+    ## 3  906.7729             0.5            1.8 0.89 0.88 1.33
+    ## 4 1573.8052             0.5            1.8 1.90 1.48 1.31
+    ## 5  786.7828             0.5            1.8 0.40 0.31 1.56
+    ## 6  805.1805             0.5            1.8 0.41 0.63 0.52
+    ## 7 1554.3277             0.5            1.8 1.88 1.46 1.22
 
 Now, we can visualise the best-fitting models and determine the optimal
-tongue lengths and c-values, if they exist. Since the previous function
+tongue lengths and c values, if they exist. Since the previous function
 generates multiple combinations of predictor variables for each tongue
 length, we aggregate the results to extract a single AIC value per
 tongue length level—the minimum value that corresponds to the
